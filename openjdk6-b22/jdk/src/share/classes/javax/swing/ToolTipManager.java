@@ -211,6 +211,31 @@ public class ToolTipManager extends MouseAdapter implements MouseMotionListener 
         return exitTimer.getInitialDelay();
     }
 
+    /**
+     * Tries to find GraphicsConfiguration
+     * that contains the mouse cursor position.
+     * Can return null.
+     */
+    private GraphicsConfiguration getCurrentGraphicsConfiguration(
+            Point popupLocation) {
+        GraphicsConfiguration gc = null;
+        GraphicsEnvironment ge =
+            GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] gd = ge.getScreenDevices();
+        for(int i = 0; i < gd.length; i++) {
+            if(gd[i].getType() == GraphicsDevice.TYPE_RASTER_SCREEN) {
+                GraphicsConfiguration dgc =
+                    gd[i].getDefaultConfiguration();
+                if(dgc.getBounds().contains(popupLocation)) {
+                    gc = dgc;
+                    break;
+                }
+            }
+        }
+        return gc;
+    }
+
+
     void showTipWindow() {
         if(insideComponent == null || !insideComponent.isShowing())
             return;
@@ -227,7 +252,9 @@ public class ToolTipManager extends MouseAdapter implements MouseMotionListener 
             Point screenLocation = insideComponent.getLocationOnScreen();
             Point location = new Point();
             GraphicsConfiguration gc;
-            gc = insideComponent.getGraphicsConfiguration();
+            gc = getCurrentGraphicsConfiguration(screenLocation);
+            if (gc == null)
+              gc = insideComponent.getGraphicsConfiguration();
             Rectangle sBounds = gc.getBounds();
             Insets screenInsets = Toolkit.getDefaultToolkit()
                                              .getScreenInsets(gc);
