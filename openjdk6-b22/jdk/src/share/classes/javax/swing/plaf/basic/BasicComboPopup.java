@@ -1232,11 +1232,9 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup {
             screenBounds = new Rectangle(p, toolkit.getScreenSize());
         }
 
+        if (ph > screenBounds.height && screenBounds.height > 500)
+            ph = screenBounds.height - 1;
         Rectangle rect = new Rectangle(px,py,pw,ph);
-        if (py+ph > screenBounds.y+screenBounds.height
-            && ph < screenBounds.height) {
-            rect.y = -rect.height;
-        }
         return rect;
     }
 
